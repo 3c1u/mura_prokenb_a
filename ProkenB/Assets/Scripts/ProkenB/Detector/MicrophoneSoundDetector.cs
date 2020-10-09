@@ -18,6 +18,10 @@ namespace ProkenB.Detector
         private VoiceInputState _currentState = VoiceInputState.Off;
         private float[] _fftResultBuffer = new float[FFT_SIZE];
 
+        public bool Voice => _currentState == VoiceInputState.Tonal;
+
+        public bool Breath => _currentState == VoiceInputState.Blow;
+
         private float _volumeRate = 0f;
 
         public enum VoiceInputState
