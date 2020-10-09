@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1893448595, guid: a040fb66244a7f54289914d98ea4ef7d, type: 3}
+  m_Name: MicrophoneDetector
+  m_EditorClassIdentifier: 
+  _data:
+    _json: '{"graph":{"variables":{"collection":{"$content":[],"$version":"A"},"$version":"A"},"controlInputDefinitions":[{"key":"_","label":null,"summary":null,"hideLabel":false}],"controlOutputDefinitions":[{"key":"__","label":null,"summary":null,"hideLabel":false}],"valueInputDefinitions":[{"hasDefaultValue":false,"defaultValue":null,"_type":"ProkenB.Detector.MicrophoneSoundDetector","key":"Detector","label":null,"summary":null,"hideLabel":false}],"valueOutputDefinitions":[{"_type":"System.Boolean","key":"Breath","label":"Breath","summary":"Whether
+      the microphone detects the breath.","hideLabel":false},{"_type":"System.Boolean","key":"Voice","label":"Voice","summary":"Whether
+      the microphone detects the voice input.","hideLabel":false}],"title":"Microphone
+      Detector","summary":"Detects the input from the microphone, and outputs the
+      status","pan":{"x":-216.3811,"y":-122.6179},"zoom":1.0,"elements":[{"defaultValues":{},"position":{"x":-654.0,"y":-201.0},"guid":"72e3ba51-32f2-429e-8dd3-c6983939a143","$version":"A","$type":"Bolt.GraphInput","$id":"14"},{"defaultValues":{},"position":{"x":177.0,"y":-177.0},"guid":"849bfb0a-49d5-4e13-8973-c32c1b654c64","$version":"A","$type":"Bolt.GraphOutput","$id":"16"},{"member":{"name":"Breath","parameterTypes":null,"targetType":"ProkenB.Detector.MicrophoneSoundDetector","targetTypeName":"ProkenB.Detector.MicrophoneSoundDetector","$version":"A"},"defaultValues":{"target":null},"position":{"x":-385.0,"y":-166.0},"guid":"e5a8073a-fb62-436e-9082-cb5f637400cf","$version":"A","$type":"Bolt.GetMember","$id":"18"},{"member":{"name":"Voice","parameterTypes":null,"targetType":"ProkenB.Detector.MicrophoneSoundDetector","targetTypeName":"ProkenB.Detector.MicrophoneSoundDetector","$version":"A"},"defaultValues":{"target":null},"position":{"x":-382.0,"y":-77.0},"guid":"320d43a2-5187-4b35-a696-f66df38fc405","$version":"A","$type":"Bolt.GetMember","$id":"21"},{"defaultValues":{},"position":{"x":-82.0,"y":-336.0},"guid":"a6588da8-42a3-47be-818e-f0455884cb9b","$version":"A","$type":"Bolt.Cache","$id":"24"},{"defaultValues":{},"position":{"x":-221.0,"y":-336.0},"guid":"5f0caabe-47d0-4657-a537-5a351f1aceff","$version":"A","$type":"Bolt.Cache","$id":"26"},{"sourceUnit":{"$ref":"14"},"sourceKey":"_","destinationUnit":{"$ref":"26"},"destinationKey":"enter","guid":"49aea76c-554a-44fc-9d28-b6619a016d17","$type":"Bolt.ControlConnection"},{"sourceUnit":{"$ref":"26"},"sourceKey":"exit","destinationUnit":{"$ref":"24"},"destinationKey":"enter","guid":"9dad5738-14cc-4abd-b77f-c2541fedc2fe","$type":"Bolt.ControlConnection"},{"sourceUnit":{"$ref":"24"},"sourceKey":"exit","destinationUnit":{"$ref":"16"},"destinationKey":"__","guid":"3de0d422-cf6a-4c6e-9649-aeefff9538d1","$type":"Bolt.ControlConnection"},{"sourceUnit":{"$ref":"14"},"sourceKey":"Detector","destinationUnit":{"$ref":"18"},"destinationKey":"target","guid":"fe92f354-0aa3-4f78-99cd-312163a1ac00","$type":"Bolt.ValueConnection"},{"sourceUnit":{"$ref":"14"},"sourceKey":"Detector","destinationUnit":{"$ref":"21"},"destinationKey":"target","guid":"f5de4f64-d19d-44b5-b73b-d705c34587bd","$type":"Bolt.ValueConnection"},{"sourceUnit":{"$ref":"18"},"sourceKey":"value","destinationUnit":{"$ref":"26"},"destinationKey":"input","guid":"0e42f93e-3286-4502-8d17-3b7afc8df881","$type":"Bolt.ValueConnection"},{"sourceUnit":{"$ref":"26"},"sourceKey":"output","destinationUnit":{"$ref":"16"},"destinationKey":"Breath","guid":"9c9b61f4-cae8-4692-82a9-f3cc42b610b1","$type":"Bolt.ValueConnection"},{"sourceUnit":{"$ref":"21"},"sourceKey":"value","destinationUnit":{"$ref":"24"},"destinationKey":"input","guid":"f46f5dff-d256-440a-93ff-444c1c50ccf3","$type":"Bolt.ValueConnection"},{"sourceUnit":{"$ref":"24"},"sourceKey":"output","destinationUnit":{"$ref":"16"},"destinationKey":"Voice","guid":"1c3a1737-4391-4203-a83e-b8e7ecff2f0a","$type":"Bolt.ValueConnection"}],"$version":"A"}}'
+    _objectReferences: []
