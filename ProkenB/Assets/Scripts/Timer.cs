@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Timer : MonoBehaviour
 {
@@ -28,7 +29,9 @@ public class Timer : MonoBehaviour
         }
         if(countdown<=0){
             CountText.text="";
-            seconds+=Time.deltaTime;
+            if(Goal.goal==false){
+                seconds+=Time.deltaTime;
+            }
             if(seconds >= 60f) {
                 minute++;
 			    seconds = seconds - 60;
