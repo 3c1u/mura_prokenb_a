@@ -1,14 +1,14 @@
 using UnityEngine;
 using Photon.Pun;
-using Photon.Realtime;
-using System.Threading.Tasks;
+using System.Collections;
+// using Photon.Realtime;
 
 namespace ProkenB.Networking
 {
     /// <summary>
     /// PUNを利用した対戦を管理するクラス．
     /// </summary>
-    public class NetworkManager : MonoBehaviourPunCallbacks
+    public class NetworkManager : MonoBehaviour
     {
         /// <summary>
         /// NetworkManagerが生成（Instantiate）された直後に実行されるイベント．
@@ -16,13 +16,21 @@ namespace ProkenB.Networking
         /// </summary>
         void Awake()
         {
-            // Photonのネットワークに接続する．
-            PhotonNetwork.ConnectUsingSettings();
         }
 
-        public override void OnConnectedToMaster()
+        IEnumerator Start()
         {
+            // Photonのネットワークに接続する．
+            if (PhotonNetwork.ConnectUsingSettings())
+            {
+                Debug.Log("Photon connected");
+            }
+            else
+            {
+                Debug.LogError("failed to connect to Photon Network");
+            }
 
+            yield break;
         }
     }
 }
