@@ -19,7 +19,8 @@ public class GameFinish : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Goal.goal==true){
+        if(Goal.goal==true)
+        {
             finishUI.SetActive(true);
             Timer t=refObj.GetComponent<Timer>();
             string v = "Finish Time = " + t.timerText.text;
@@ -27,7 +28,8 @@ public class GameFinish : MonoBehaviour
         }
 
     }
-    public void OnRetry(){
+    public void OnRetry()
+    {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
