@@ -8,15 +8,16 @@ public class Title : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Invoke("ChangeScene",1.5f);
+        Invoke("ChangeScene", 1.5f);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
-    void ChangeScene(){
+    void ChangeScene()
+    {
         SceneManager.LoadScene("WorkScene");
     }
 }
