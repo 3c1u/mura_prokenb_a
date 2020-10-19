@@ -5,11 +5,14 @@ using UnityEngine;
 public class Goal : MonoBehaviour
 {
     public static bool goal;
-    void start(){
+    void start()
+    {
         goal=false;
     }
-    void OnTriggerEnter(Collider other){
-        if(other.gameObject.tag=="Player"){
+    void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.tag=="Player")
+        {
             goal=true;
         }
     }
