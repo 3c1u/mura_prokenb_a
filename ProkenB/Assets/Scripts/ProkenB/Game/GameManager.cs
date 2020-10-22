@@ -1,5 +1,8 @@
 using System;
 using UnityEngine;
+using ProkenB.Networking;
+using ProkenB.Presenter;
+using ProkenB.Model;
 
 namespace ProkenB.Game
 {
@@ -21,8 +24,16 @@ namespace ProkenB.Game
         private GameObject m_mainPlayer = null;
         private GameObject m_stage = null;
 
+        // モデル
+        private PlayerModel m_model = null;
+
+        private NetworkManager m_networkManager = null;
+
         private static GameManager m_manager = null;
         public static GameManager Instance => m_manager ?? throw new NullReferenceException("GameManager not started");
+
+        private float m_startTime = 0;
+        public float Now => Time.time - m_startTime;
         
         /// <summary>
         /// すべてのゲームオブジェクトが初期化されたあとに呼ばれる奴．
@@ -37,11 +48,20 @@ namespace ProkenB.Game
             }
             
             m_manager = this;
+
+            // タイマーの初期化（本当はGameModelのステート変更によって初期化されるべき）
+            m_startTime = Time.time;
+
+            // ネットワークマネージャーの初期化
+            m_networkManager = gameObject.AddComponent<NetworkManager>();
             
             // TODO: モデルの初期化
+            m_model = new PlayerModel();
             
             // TODO: プレイヤーの初期化処理はPlayerFactoryにやらせる（ここでPresenter/Viewも用意）
             m_mainPlayer = Instantiate(playerPrefab);
+            var presenter = m_mainPlayer.AddComponent<PlayerPresenter>();
+            presenter.Bind(m_model);
             
             // TODO: ステージの初期化処理もStageFactoryにやらせる
             m_stage = Instantiate(stagePrefab);
@@ -62,9 +82,15 @@ namespace ProkenB.Game
             m_stage = null;
             
             // TODO: モデルを破棄
+            m_model = null;
             
             // ここでちゃんとGameManagerを破棄する
             m_manager = null;
+        }
+
+        void Update()
+        {
+            //
         }
     }
 }
