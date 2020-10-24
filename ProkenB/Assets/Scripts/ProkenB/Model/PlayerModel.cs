@@ -24,6 +24,8 @@ namespace ProkenB.Model
 
         private ReactiveProperty<float?> m_goalTime = new ReactiveProperty<float?>(null);
 
+        public IObservable<float?> GoalTimeAsObservable => m_goalTime.AsObservable();
+
         /// <summary>
         /// ゴールした時間．`null`ならまた未達成．
         /// </summary>
