@@ -22,7 +22,7 @@ namespace ProkenB.Model
         public GameLifecycle Lifecycle
         {
             get => m_lifecycle.Value;
-            set => m_lifecycle.SetValueAndForceNotify(value);
+            set => m_lifecycle.Value = value;
         }
 
         public IObservable<GameLifecycle> LifecycleAsObservable => m_lifecycle.AsObservable();

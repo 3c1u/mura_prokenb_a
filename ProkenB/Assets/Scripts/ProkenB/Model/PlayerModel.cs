@@ -14,7 +14,7 @@ namespace ProkenB.Model
         public Vector3 Position
         {
             get => m_position.Value;
-            set => m_position.SetValueAndForceNotify(value);
+            set => m_position.Value = value;
         }
 
         /// <summary>
@@ -30,12 +30,17 @@ namespace ProkenB.Model
         public float? GoalTime
         {
             get => m_goalTime.Value;
-            set => m_goalTime.SetValueAndForceNotify(value);
+            set => m_goalTime.Value = value;
         }
 
         /// <summary>
         /// ゴールしたかどうか．
         /// </summary>
         public bool HasReachedGoal => m_goalTime.Value != null;
+
+        public void Destroy()
+        {
+            // TODO:
+        }
     }
 }
