@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using ProkenB.Game;
+using ProkenB.Detector;
 
 public class VisualSensor : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class VisualSensor : MonoBehaviour
     public Text fftText;
     public Text voiceText;
     public Text breathText;
-
+    
     void Start()
     {
         fftText.text = "FFT:None";
@@ -23,7 +24,8 @@ public class VisualSensor : MonoBehaviour
     {
         var breath = GameManager.Instance.Detector.Breath;
         var voice = GameManager.Instance.Detector.Voice;
-        fftText.text="";
+        MicrophoneSoundDetector x = new MicrophoneSoundDetector();
+        fftText.text="FFT"+x.fftResultBuffer;
         voiceText.text="Voice:"+voice;
         breathText.text="Breath:"+breath;
     }
