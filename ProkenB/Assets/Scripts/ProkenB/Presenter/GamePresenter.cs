@@ -17,9 +17,9 @@ namespace ProkenB.Presenter
         {
             m_view = gameObject.GetOrAddComponent<GameView>();
             m_model = new GameModel();
-            
+
             GameManager.Instance.Model = m_model;
-            
+
             Bind();
         }
 

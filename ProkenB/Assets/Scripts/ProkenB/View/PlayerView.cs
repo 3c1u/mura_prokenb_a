@@ -47,7 +47,7 @@ namespace ProkenB.View
 
             var cameraTr = Camera.main.transform;
             var position = transform.position;
-            
+
             cameraTr.position = position + m_cameraOffset;
             m_positionChanged.OnNext(position);
         }

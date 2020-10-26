@@ -41,9 +41,11 @@ namespace ProkenB.Game
         public float Now => Time.time - m_startTime;
 
         public MicrophoneSoundDetector Detector => detector;
-        public GameModel Model {
+        public GameModel Model
+        {
             get => m_model;
-            set {
+            set
+            {
                 lock (m_lock)
                 {
                     m_model = value;
@@ -52,7 +54,7 @@ namespace ProkenB.Game
                 }
             }
         }
-        
+
         /// <summary>
         /// すべてのゲームオブジェクトが初期化されたあとに呼ばれる奴．
         ///
@@ -74,7 +76,7 @@ namespace ProkenB.Game
             m_networkManager = gameObject.AddComponent<NetworkManager>();
 
             await m_networkManager.ConnectAsync();
-            
+
             SetupGame();
         }
 
@@ -88,9 +90,9 @@ namespace ProkenB.Game
                     new Vector3(0, 0, 0),
                     Quaternion.identity);
             }
-            
+
             await WaitForModel();
-            
+
             // ステージの初期化
             m_stage = Instantiate(stagePrefab);
             m_mainPlayer = PhotonNetwork.Instantiate(
@@ -115,10 +117,10 @@ namespace ProkenB.Game
                     return;
                 }
             }
-            
+
             await m_modelWaiter.Task;
         }
-        
+
         /// <summary>
         /// ここでオブジェクトの後片付けを行う．
         /// </summary>

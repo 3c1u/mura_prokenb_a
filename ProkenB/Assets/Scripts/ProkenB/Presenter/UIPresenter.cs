@@ -21,7 +21,7 @@ namespace ProkenB.Presenter
         {
             await GameManager.Instance.WaitForModel();
             m_model = GameManager.Instance.Model;
-            
+
             Bind();
         }
 
@@ -34,7 +34,7 @@ namespace ProkenB.Presenter
         {
             gameStateView.Lifecycle = m_model.Lifecycle;
             gameStateView.IsMaster = m_model.IsMaster;
-            
+
             m_model.LifecycleAsObservable
                 .Do(value => gameStateView.Lifecycle = value)
                 .Subscribe();

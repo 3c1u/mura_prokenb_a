@@ -10,7 +10,7 @@ namespace ProkenB.View.UI
     {
         [SerializeField]
         private Text m_text = null;
-        
+
         private GameModel.GameLifecycle m_lifecycle;
         private bool m_isMaster = false;
 
@@ -37,7 +37,7 @@ namespace ProkenB.View.UI
         void UpdateLabel()
         {
             string state;
-            
+
             switch (m_lifecycle)
             {
                 case GameModel.GameLifecycle.NotInitialized:

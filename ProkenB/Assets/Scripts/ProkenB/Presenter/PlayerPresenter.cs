@@ -20,15 +20,15 @@ namespace ProkenB.Presenter
         {
             // カスPhotonめ...
             await GameManager.Instance.WaitForModel();
-            
+
             // ここでモデルへの追加と初期化を行う
             var model = new PlayerModel();
 
             GameManager.Instance.Model.AddPlayer(model);
-            
+
             m_view = gameObject.GetOrAddComponent<PlayerView>();
             m_model = model;
-            
+
             Bind();
         }
 

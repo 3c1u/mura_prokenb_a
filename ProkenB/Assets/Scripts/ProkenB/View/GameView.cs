@@ -10,13 +10,13 @@ namespace ProkenB.View
     public class GameView : MonoBehaviourPunCallbacks
     {
         private PhotonView m_photonView = null;
-        
+
         private bool m_isMaster = false;
         public bool IsMaster => m_isMaster;
-        
+
         private Subject<Player> m_ownershipChanged = new Subject<Player>();
         public IObservable<Player> OwnershipChanged => m_ownershipChanged.AsObservable();
-        
+
         private ReactiveProperty<GameModel.GameLifecycle> m_lifecycle = new ReactiveProperty<GameModel.GameLifecycle>(GameModel.GameLifecycle.NotInitialized);
         public GameModel.GameLifecycle Lifecycle
         {
@@ -32,7 +32,7 @@ namespace ProkenB.View
             get => m_totalPlayers.Value;
             set => m_totalPlayers.Value = value;
         }
-        
+
         private float m_timer = 0f;
 
         void Awake()
@@ -46,31 +46,31 @@ namespace ProkenB.View
         public override void OnMasterClientSwitched(Player newMasterClient)
         {
             m_ownershipChanged.OnNext(newMasterClient);
-            
+
             if (!newMasterClient.IsLocal)
             {
                 m_isMaster = false;
                 return;
             }
-            
+
             // 新しいマスタークライアントに所有権を渡す
             m_photonView.TransferOwnership(newMasterClient);
             m_isMaster = true;
 
             Debug.Log("ownership moved to local");
-            
+
             // マスターとしての処理を引き継ぐ
         }
 
         private void Update()
         {
             m_timer += Time.deltaTime;
-            
+
             if (!m_isMaster)
             {
                 return;
             }
-            
+
             switch (Lifecycle)
             {
                 case GameModel.GameLifecycle.NotInitialized:
@@ -93,7 +93,7 @@ namespace ProkenB.View
                     throw new ArgumentOutOfRangeException();
             }
         }
-        
+
         [PunRPC]
         void StartGame()
         {
@@ -101,12 +101,12 @@ namespace ProkenB.View
 
             Lifecycle = GameModel.GameLifecycle.Playing;
         }
-        
+
         [PunRPC]
         void GameReady()
         {
             Debug.Log("game is ready");
-            
+
             Lifecycle = GameModel.GameLifecycle.Ready;
             m_timer = 0;
         }
