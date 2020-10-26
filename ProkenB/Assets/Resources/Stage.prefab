@@ -87,7 +87,6 @@ GameObject:
   - component: {fileID: 4340388241862521633}
   - component: {fileID: 4340388241862521632}
   - component: {fileID: 4340388241862521639}
-  - component: {fileID: 4340388241862521638}
   m_Layer: 0
   m_Name: GoalLine
   m_TagString: Untagged
@@ -185,22 +184,6 @@ MonoBehaviour:
   _data:
     _json: '{"declarations":{"collection":{"$content":[],"$version":"A"},"$version":"A"}}'
     _objectReferences: []
---- !u!114 &4340388241862521638
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4340388241862521637}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -57143145, guid: a040fb66244a7f54289914d98ea4ef7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _data:
-    _json: '{"nest":{"source":"Macro","macro":0,"embed":null}}'
-    _objectReferences:
-    - {fileID: 11400000, guid: becdf1bf3156bda498c13e44cd261878, type: 2}
 --- !u!1 &4340388242186027524
 GameObject:
   m_ObjectHideFlags: 0

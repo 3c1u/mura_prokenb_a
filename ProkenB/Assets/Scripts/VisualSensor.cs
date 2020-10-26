@@ -11,7 +11,7 @@ public class VisualSensor : MonoBehaviour
     public Text fftText;
     public Text voiceText;
     public Text breathText;
-    
+
     void Start()
     {
         fftText.text = "FFT:None";
