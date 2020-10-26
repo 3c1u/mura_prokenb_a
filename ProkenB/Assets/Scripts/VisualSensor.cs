@@ -11,12 +11,11 @@ public class VisualSensor : MonoBehaviour
     public Text fftText;
     public Text voiceText;
     public Text breathText;
-
     void Start()
     {
         fftText.text = "FFT:None";
-        voiceText.text="Voice:None";
-        breathText.text="Breath:None";
+        voiceText.text = "Voice:None";
+        breathText.text = "Breath:None";
     }
 
     // Update is called once per frame
@@ -24,9 +23,8 @@ public class VisualSensor : MonoBehaviour
     {
         var breath = GameManager.Instance.Detector.Breath;
         var voice = GameManager.Instance.Detector.Voice;
-        MicrophoneSoundDetector x = new MicrophoneSoundDetector();
-        fftText.text="FFT"+x.fftResultBuffer;
-        voiceText.text="Voice:"+voice;
-        breathText.text="Breath:"+breath;
+        fftText.text = "FFT";
+        voiceText.text = "Voice:" + voice;
+        breathText.text = "Breath:" + breath;
     }
 }

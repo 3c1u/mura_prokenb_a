@@ -7,7 +7,7 @@ public class describe : MonoBehaviour
 {
     // Start is called before the first frame update
     public LineRenderer lr;
-    private int count=0;
+    private int count = 0;
     void Start()
     {
     }
@@ -17,6 +17,6 @@ public class describe : MonoBehaviour
     {
         MicrophoneSoundDetector x = new MicrophoneSoundDetector();
         count++;
-        lr.SetPosition(count-1,new Vector3(count,x.fftResultBuffer[count],0));
+        lr.SetPosition(count - 1, new Vector3(count, x.fftResultBuffer[count], 0));
     }
 }

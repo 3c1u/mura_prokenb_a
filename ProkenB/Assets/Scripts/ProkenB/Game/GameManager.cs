@@ -32,6 +32,7 @@ namespace ProkenB.Game
         private NetworkManager m_networkManager = null;
 
         private static GameManager m_manager = null;
+        
         public static GameManager Instance => m_manager ?? throw new NullReferenceException("GameManager not started");
 
         private float m_startTime = 0;
