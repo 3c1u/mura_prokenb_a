@@ -1,4 +1,5 @@
 using System;
+using Ludiq;
 using ProkenB.Game;
 using ProkenB.Model;
 using ProkenB.View;
@@ -13,24 +14,36 @@ namespace ProkenB.Presenter
         private PlayerView m_view = null;
         private PlayerModel m_model = null;
 
-        private PlayerView View => m_view ?? (m_view = gameObject.AddComponent<PlayerView>());
+        private PlayerView View => m_view;
 
-        private void Awake()
+        private async void Awake()
         {
+            // カスPhotonめ...
+            await GameManager.Instance.WaitForModel();
+            
             // ここでモデルへの追加と初期化を行う
             var model = new PlayerModel();
-            GameManager.Instance.Model.Players.Add(model);
-            Bind(model);
+
+            GameManager.Instance.Model.AddPlayer(model);
+            
+            m_view = gameObject.GetOrAddComponent<PlayerView>();
+            m_model = model;
+            
+            Bind();
         }
 
-        public void Bind(PlayerModel model, bool synchronizeToModel = false)
+        private void OnDestroy()
         {
-            m_model = model;
+            m_view = null;
+            m_model = null;
+        }
 
+        public void Bind(bool synchronizeToModel = false)
+        {
             if (synchronizeToModel)
             {
                 // TODO: モデルに同期
-                View.Position = model.Position;
+                View.Position = m_model.Position;
             }
             else
             {
@@ -49,7 +62,7 @@ namespace ProkenB.Presenter
 
             // 削除
             View.OnDestroyAsObservable()
-                .Do(_ => m_model.Destroy())
+                .Do(_ => m_model?.Destroy())
                 .Subscribe();
         }
     }
