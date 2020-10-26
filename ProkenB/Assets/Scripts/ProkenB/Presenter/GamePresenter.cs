@@ -51,6 +51,10 @@ namespace ProkenB.Presenter
                 .Do(value => m_model.IsMaster = value.IsMasterClient)
                 .Subscribe();
 
+            // m_view.TotalPlayersChanged
+            //     .Do(value => m_model.TotalPlayers = value)
+            //     .Subscribe();
+            
             m_model.TotalPlayersAsObservable
                 .Do(value => m_view.TotalPlayers = value)
                 .Subscribe();

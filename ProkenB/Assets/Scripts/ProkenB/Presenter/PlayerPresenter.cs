@@ -61,8 +61,9 @@ namespace ProkenB.Presenter
                 .Subscribe();
 
             // 削除
+            var model = m_model;
             View.OnDestroyAsObservable()
-                .Do(_ => m_model?.Destroy())
+                .Do(_ => model.Destroy())
                 .Subscribe();
         }
     }

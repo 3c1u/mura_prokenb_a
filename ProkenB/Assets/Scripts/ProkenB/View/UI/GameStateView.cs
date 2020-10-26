@@ -13,6 +13,7 @@ namespace ProkenB.View.UI
 
         private GameModel.GameLifecycle m_lifecycle;
         private bool m_isMaster = false;
+        private int m_totalPlayers = 0;
 
         public bool IsMaster
         {
@@ -32,6 +33,21 @@ namespace ProkenB.View.UI
                 m_lifecycle = value;
                 UpdateLabel();
             }
+        }
+
+        public int TotalPlayers
+        {
+            get => m_totalPlayers;
+            set
+            {
+                m_totalPlayers = value;
+                UpdateLabel();
+            }
+        }
+
+        void Start()
+        {
+            m_text.text = "";
         }
 
         void UpdateLabel()
@@ -55,9 +71,8 @@ namespace ProkenB.View.UI
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            var master = m_isMaster ? " (master)" : "";
-            m_text.text = $"{state}{master}";
+            
+            m_text.text = $"{m_totalPlayers} player{(m_totalPlayers < 2 ? "" : "s")}\n{state}{(m_isMaster ? " (master)" : "")}";
         }
     }
 }

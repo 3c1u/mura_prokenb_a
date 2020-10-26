@@ -93,8 +93,19 @@ namespace ProkenB.Game
 
             await WaitForModel();
 
+            var players = PhotonNetwork.CountOfPlayersOnMaster;
+            Debug.Log($"game initialized with {players} player(s)");
+
+            if (players > Constant.MAX_PLAYERS)
+            {
+                // プレイヤー数上限の場合は，シーンの生成を行わない．
+                Debug.LogError("too many players in the same room: we do not handle that");
+            }
+
             // ステージの初期化
             m_stage = Instantiate(stagePrefab);
+            
+            // プレイヤーの配置
             m_mainPlayer = PhotonNetwork.Instantiate(
                 "Player",
                 new Vector3(10.10229f, 2.368004f, 21.034f),

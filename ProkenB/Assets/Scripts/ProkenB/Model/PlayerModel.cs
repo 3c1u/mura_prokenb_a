@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UniRx;
 using System;
+using Photon.Pun.Demo.PunBasics;
 
 namespace ProkenB.Model
 {
@@ -42,7 +43,7 @@ namespace ProkenB.Model
 
         public void Destroy()
         {
-            // TODO:
+            Game.GameManager.Instance.Model.RemovePlayer(this);
         }
     }
 }

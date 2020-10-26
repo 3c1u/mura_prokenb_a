@@ -1,4 +1,5 @@
 using System;
+using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 using ProkenB.Model;
@@ -17,30 +18,66 @@ namespace ProkenB.View
         private Subject<Player> m_ownershipChanged = new Subject<Player>();
         public IObservable<Player> OwnershipChanged => m_ownershipChanged.AsObservable();
 
-        private ReactiveProperty<GameModel.GameLifecycle> m_lifecycle = new ReactiveProperty<GameModel.GameLifecycle>(GameModel.GameLifecycle.NotInitialized);
+        private Subject<GameModel.GameLifecycle> m_lifecycle = new Subject<GameModel.GameLifecycle>();
         public GameModel.GameLifecycle Lifecycle
         {
-            get => m_lifecycle.Value;
-            set => m_lifecycle.Value = value;
+            get => m_customProperties["Lifecycle"] is int value ? (GameModel.GameLifecycle) value : GameModel.GameLifecycle.NotInitialized;
+            set
+            {
+                m_customProperties["Lifecycle"] = (int) value;
+                UpdateParameters();
+            }
         }
         public IObservable<GameModel.GameLifecycle> LifecycleChanged => m_lifecycle.AsObservable();
 
-        private ReactiveProperty<int> m_totalPlayers = new ReactiveProperty<int>(0);
+        private Subject<int> m_totalPlayers = new Subject<int>();
+        public IObservable<int> TotalPlayersChanged => m_totalPlayers.AsObservable();
 
         public int TotalPlayers
         {
-            get => m_totalPlayers.Value;
-            set => m_totalPlayers.Value = value;
+            get => m_customProperties["TotalPlayers"] is int value ? value : 0;
+            set
+            {
+                m_customProperties["TotalPlayers"] = value;
+                UpdateParameters();
+            }
         }
 
         private float m_timer = 0f;
+        
+        private Hashtable m_customProperties = new Hashtable();
 
         void Awake()
         {
             m_photonView = GetComponent<PhotonView>();
 
-            // GameViewが自分で作られた場合は，GameView
+            // GameViewが自分で作られた場合は，マスターになる
             m_isMaster = m_photonView.IsMine;
+            
+            m_customProperties["TotalPlayers"] = 0;
+            m_customProperties["Lifecycle"] = (int) GameModel.GameLifecycle.NotInitialized;
+        }
+
+        public override void OnJoinedRoom()
+        {
+            UpdateParameters();
+        }
+
+        private void UpdateParameters()
+        {
+            if (!m_isMaster)
+            {
+                m_customProperties = PhotonNetwork.LocalPlayer.CustomProperties;
+
+                if (Lifecycle == GameModel.GameLifecycle.Playing || Lifecycle == GameModel.GameLifecycle.Finish)
+                {
+                    Debug.LogError("an attempt to join the ongoing game should not occur");
+                }
+                
+                return;
+            }
+
+            PhotonNetwork.LocalPlayer.SetCustomProperties(m_customProperties);
         }
 
         public override void OnMasterClientSwitched(Player newMasterClient)
@@ -74,41 +111,62 @@ namespace ProkenB.View
             switch (Lifecycle)
             {
                 case GameModel.GameLifecycle.NotInitialized:
-                    if (TotalPlayers >= 2)
+                    if (TotalPlayers >= Constant.MIN_PLAYERS)
                     {
-                        m_photonView.RPC("GameReady", RpcTarget.All);
+                        Lifecycle = GameModel.GameLifecycle.Ready;
+                        m_timer = 0;
                     }
                     break;
                 case GameModel.GameLifecycle.Ready:
-                    if (m_timer >= 5.0f)
+                    if (m_timer >= Constant.WAITTIME_GAME_START)
                     {
-                        m_photonView.RPC("StartGame", RpcTarget.All);
+                        Lifecycle = GameModel.GameLifecycle.Playing;
+                        m_timer = 0;
+                    }
+
+                    if (TotalPlayers == 1)
+                    {
+                        // 待機状態にロールバック
+                        Lifecycle = GameModel.GameLifecycle.NotInitialized;
+                        m_timer = 0;
                     }
                     break;
                 case GameModel.GameLifecycle.Playing:
+                    if (TotalPlayers == 1 || false) // TODO: ゴール判定
+                    {
+                        Lifecycle = GameModel.GameLifecycle.Finish;
+                        m_timer = 0;
+                    }
                     break;
                 case GameModel.GameLifecycle.Finish:
+                    if (false) // 全員のゴール判定
+                    {
+                        // TODO: シーン遷移とか
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        [PunRPC]
-        void StartGame()
+        public override void OnPlayerPropertiesUpdate(Player target, Hashtable changedProps)
         {
-            Debug.Log("game started");
+            if (target.ActorNumber != photonView.OwnerActorNr)
+            {
+                return;
+            }
+            
+            if (changedProps["TotalPlayers"] is int totalPlayers)
+            {
+                m_totalPlayers.OnNext(totalPlayers);
+                m_customProperties["TotalPlayers"] = totalPlayers;
+            }
 
-            Lifecycle = GameModel.GameLifecycle.Playing;
-        }
-
-        [PunRPC]
-        void GameReady()
-        {
-            Debug.Log("game is ready");
-
-            Lifecycle = GameModel.GameLifecycle.Ready;
-            m_timer = 0;
+            if (changedProps["Lifecycle"] is int lifecycle)
+            {
+                m_lifecycle.OnNext((GameModel.GameLifecycle) lifecycle);
+                m_customProperties["Lifecycle"] = lifecycle;
+            }
         }
     }
 }
