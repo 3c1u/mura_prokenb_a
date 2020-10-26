@@ -42,7 +42,7 @@ namespace ProkenB.Presenter
             m_model.TotalPlayersAsObservable
                 .Do(value => gameStateView.TotalPlayers = value)
                 .Subscribe();
-            
+
             m_model.IsMasterAsObservable
                 .Do(value => gameStateView.IsMaster = value)
                 .Subscribe();

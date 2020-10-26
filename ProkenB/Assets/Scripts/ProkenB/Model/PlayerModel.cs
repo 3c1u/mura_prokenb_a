@@ -45,7 +45,7 @@ namespace ProkenB.Model
         public void Destroy()
         {
             GameModel parent = null;
-            
+
             if (m_parent?.TryGetTarget(out parent) ?? false)
             {
                 parent.RemovePlayer(this);

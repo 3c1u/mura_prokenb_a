@@ -21,10 +21,10 @@ namespace ProkenB.View
         private Subject<GameModel.GameLifecycle> m_lifecycle = new Subject<GameModel.GameLifecycle>();
         public GameModel.GameLifecycle Lifecycle
         {
-            get => m_customProperties["Lifecycle"] is int value ? (GameModel.GameLifecycle) value : GameModel.GameLifecycle.NotInitialized;
+            get => m_customProperties["Lifecycle"] is int value ? (GameModel.GameLifecycle)value : GameModel.GameLifecycle.NotInitialized;
             set
             {
-                m_customProperties["Lifecycle"] = (int) value;
+                m_customProperties["Lifecycle"] = (int)value;
                 m_lifecycle.OnNext(value);
                 UpdateParameters();
             }
@@ -46,7 +46,7 @@ namespace ProkenB.View
         }
 
         private float m_timer = 0f;
-        
+
         private Hashtable m_customProperties = new Hashtable();
 
         void Awake()
@@ -55,9 +55,9 @@ namespace ProkenB.View
 
             // GameViewが自分で作られた場合は，マスターになる
             m_isMaster = PhotonNetwork.IsMasterClient;
-            
+
             m_customProperties["TotalPlayers"] = 0;
-            m_customProperties["Lifecycle"] = (int) GameModel.GameLifecycle.NotInitialized;
+            m_customProperties["Lifecycle"] = (int)GameModel.GameLifecycle.NotInitialized;
         }
 
         public override void OnJoinedRoom()
@@ -65,15 +65,15 @@ namespace ProkenB.View
             if (!m_isMaster)
             {
                 m_customProperties = PhotonNetwork.LocalPlayer.CustomProperties;
-                
+
                 Lifecycle = Lifecycle;
                 TotalPlayers = TotalPlayers;
-                
+
                 if (Lifecycle == GameModel.GameLifecycle.Playing || Lifecycle == GameModel.GameLifecycle.Finish)
                 {
                     Debug.LogError("an attempt to join the ongoing game should not occur");
                 }
-                
+
                 return;
             }
 
@@ -112,7 +112,7 @@ namespace ProkenB.View
             {
                 return;
             }
-            
+
             switch (Lifecycle)
             {
                 case GameModel.GameLifecycle.NotInitialized:
@@ -160,7 +160,7 @@ namespace ProkenB.View
             {
                 return;
             }
-            
+
             if (changedProps["TotalPlayers"] is int totalPlayers)
             {
                 m_totalPlayers.OnNext(totalPlayers);
@@ -169,7 +169,7 @@ namespace ProkenB.View
 
             if (changedProps["Lifecycle"] is int lifecycle)
             {
-                m_lifecycle.OnNext((GameModel.GameLifecycle) lifecycle);
+                m_lifecycle.OnNext((GameModel.GameLifecycle)lifecycle);
                 m_customProperties["Lifecycle"] = lifecycle;
             }
         }

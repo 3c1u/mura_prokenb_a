@@ -91,6 +91,9 @@ namespace ProkenB.Game
         {
             await WaitForModel();
 
+            // Photonが同期するのを待つ
+            await Task.Delay(2000);
+
             var players = Model.TotalPlayers;
             Debug.Log($"game initialized with {players} player(s)");
 
@@ -102,7 +105,7 @@ namespace ProkenB.Game
 
             // ステージの初期化
             m_stage = Instantiate(stagePrefab);
-            
+
             // プレイヤーの配置
             m_mainPlayer = PhotonNetwork.Instantiate(
                 "Player",

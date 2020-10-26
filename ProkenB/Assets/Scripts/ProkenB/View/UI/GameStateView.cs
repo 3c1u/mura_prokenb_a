@@ -61,7 +61,7 @@ namespace ProkenB.View.UI
             {
                 return;
             }
-            
+
             string state;
 
             switch (m_lifecycle)
@@ -81,7 +81,7 @@ namespace ProkenB.View.UI
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
+
             m_text.text = $"{m_totalPlayers} player{(m_totalPlayers < 2 ? "" : "s")}\n{state}{(m_isMaster ? " (master)" : "")}";
         }
     }

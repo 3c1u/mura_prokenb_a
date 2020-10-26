@@ -42,7 +42,7 @@ namespace ProkenB.Presenter
 
             var view = m_view;
             var model = m_model;
-            
+
             view.TotalPlayers = model.TotalPlayers;
 
             view.LifecycleChanged
@@ -56,7 +56,7 @@ namespace ProkenB.Presenter
             m_view.TotalPlayersChanged
                 .Do(value => model.TotalPlayers = value)
                 .Subscribe();
-            
+
             model.TotalPlayersAsObservable
                 .Do(value => view.TotalPlayers = value)
                 .Subscribe();
