@@ -19,7 +19,6 @@ namespace ProkenB.Presenter
             m_model = new GameModel();
 
             GameManager.Instance.Model = m_model;
-
             Bind();
         }
 
@@ -41,22 +40,25 @@ namespace ProkenB.Presenter
                 m_model.Lifecycle = m_view.Lifecycle;
             }
 
-            m_view.TotalPlayers = m_model.TotalPlayers;
-
-            m_view.LifecycleChanged
-                .Do(l => m_model.Lifecycle = l)
-                .Subscribe();
-
-            m_view.OwnershipChanged
-                .Do(value => m_model.IsMaster = value.IsMasterClient)
-                .Subscribe();
-
-            // m_view.TotalPlayersChanged
-            //     .Do(value => m_model.TotalPlayers = value)
-            //     .Subscribe();
+            var view = m_view;
+            var model = m_model;
             
-            m_model.TotalPlayersAsObservable
-                .Do(value => m_view.TotalPlayers = value)
+            view.TotalPlayers = model.TotalPlayers;
+
+            view.LifecycleChanged
+                .Do(l => model.Lifecycle = l)
+                .Subscribe();
+
+            view.OwnershipChanged
+                .Do(value => model.IsMaster = value.IsMasterClient)
+                .Subscribe();
+
+            m_view.TotalPlayersChanged
+                .Do(value => model.TotalPlayers = value)
+                .Subscribe();
+            
+            model.TotalPlayersAsObservable
+                .Do(value => view.TotalPlayers = value)
                 .Subscribe();
         }
     }

@@ -77,11 +77,6 @@ namespace ProkenB.Game
 
             await m_networkManager.ConnectAsync();
 
-            SetupGame();
-        }
-
-        async void SetupGame()
-        {
             if (PhotonNetwork.IsMasterClient)
             {
                 // Gameオブジェクトを作成
@@ -90,10 +85,13 @@ namespace ProkenB.Game
                     new Vector3(0, 0, 0),
                     Quaternion.identity);
             }
+        }
 
+        async void Start()
+        {
             await WaitForModel();
 
-            var players = PhotonNetwork.CountOfPlayersOnMaster;
+            var players = Model.TotalPlayers;
             Debug.Log($"game initialized with {players} player(s)");
 
             if (players > Constant.MAX_PLAYERS)
@@ -108,7 +106,8 @@ namespace ProkenB.Game
             // プレイヤーの配置
             m_mainPlayer = PhotonNetwork.Instantiate(
                 "Player",
-                new Vector3(10.10229f, 2.368004f, 21.034f),
+                new Vector3(10.10229f, 2.368004f, 21.034f)
+                        + new Vector3(20.0f, 0, 0) * players,
                 Quaternion.identity);
 
             if (m_mainPlayer == null)
@@ -144,7 +143,6 @@ namespace ProkenB.Game
             Destroy(m_stage);
             m_stage = null;
 
-            // TODO: モデルを破棄
             m_model = null;
 
             // ここでちゃんとGameManagerを破棄する

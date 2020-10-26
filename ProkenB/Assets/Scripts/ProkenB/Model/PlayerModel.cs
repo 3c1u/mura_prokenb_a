@@ -7,6 +7,7 @@ namespace ProkenB.Model
 {
     public class PlayerModel
     {
+        private WeakReference<GameModel> m_parent = new WeakReference<GameModel>(Game.GameManager.Instance.Model);
         private ReactiveProperty<Vector3> m_position = new ReactiveProperty<Vector3>(new Vector3());
 
         /// <summary>
@@ -43,7 +44,12 @@ namespace ProkenB.Model
 
         public void Destroy()
         {
-            Game.GameManager.Instance.Model.RemovePlayer(this);
+            GameModel parent = null;
+            
+            if (m_parent?.TryGetTarget(out parent) ?? false)
+            {
+                parent.RemovePlayer(this);
+            }
         }
     }
 }

@@ -639,6 +639,11 @@ PrefabInstance:
       propertyPath: viewIdField
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6233999273046283443, guid: 8e8dcf1a6097d4fb38aca2bf44003440,
+        type: 3}
+      propertyPath: OwnershipTransfer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8e8dcf1a6097d4fb38aca2bf44003440, type: 3}
 --- !u!1001 &7795579380237011200

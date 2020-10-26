@@ -50,8 +50,18 @@ namespace ProkenB.View.UI
             m_text.text = "";
         }
 
+        private void OnDestroy()
+        {
+            m_text = null;
+        }
+
         void UpdateLabel()
         {
+            if (!m_text)
+            {
+                return;
+            }
+            
             string state;
 
             switch (m_lifecycle)

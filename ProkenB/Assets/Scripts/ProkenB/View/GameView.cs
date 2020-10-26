@@ -25,6 +25,7 @@ namespace ProkenB.View
             set
             {
                 m_customProperties["Lifecycle"] = (int) value;
+                m_lifecycle.OnNext(value);
                 UpdateParameters();
             }
         }
@@ -39,6 +40,7 @@ namespace ProkenB.View
             set
             {
                 m_customProperties["TotalPlayers"] = value;
+                m_totalPlayers.OnNext(value);
                 UpdateParameters();
             }
         }
@@ -52,7 +54,7 @@ namespace ProkenB.View
             m_photonView = GetComponent<PhotonView>();
 
             // GameViewが自分で作られた場合は，マスターになる
-            m_isMaster = m_photonView.IsMine;
+            m_isMaster = PhotonNetwork.IsMasterClient;
             
             m_customProperties["TotalPlayers"] = 0;
             m_customProperties["Lifecycle"] = (int) GameModel.GameLifecycle.NotInitialized;
@@ -60,15 +62,13 @@ namespace ProkenB.View
 
         public override void OnJoinedRoom()
         {
-            UpdateParameters();
-        }
-
-        private void UpdateParameters()
-        {
             if (!m_isMaster)
             {
                 m_customProperties = PhotonNetwork.LocalPlayer.CustomProperties;
-
+                
+                Lifecycle = Lifecycle;
+                TotalPlayers = TotalPlayers;
+                
                 if (Lifecycle == GameModel.GameLifecycle.Playing || Lifecycle == GameModel.GameLifecycle.Finish)
                 {
                     Debug.LogError("an attempt to join the ongoing game should not occur");
@@ -77,6 +77,11 @@ namespace ProkenB.View
                 return;
             }
 
+            UpdateParameters();
+        }
+
+        private void UpdateParameters()
+        {
             PhotonNetwork.LocalPlayer.SetCustomProperties(m_customProperties);
         }
 
@@ -107,7 +112,7 @@ namespace ProkenB.View
             {
                 return;
             }
-
+            
             switch (Lifecycle)
             {
                 case GameModel.GameLifecycle.NotInitialized:
@@ -151,7 +156,7 @@ namespace ProkenB.View
 
         public override void OnPlayerPropertiesUpdate(Player target, Hashtable changedProps)
         {
-            if (target.ActorNumber != photonView.OwnerActorNr)
+            if (target.ActorNumber != photonView.OwnerActorNr || target.IsLocal)
             {
                 return;
             }
