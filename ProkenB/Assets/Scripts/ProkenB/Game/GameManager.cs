@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Photon.Pun;
 using ProkenB.Detector;
 using UnityEngine;
@@ -28,6 +29,8 @@ namespace ProkenB.Game
 
         // モデル
         private GameModel m_model = null;
+        private TaskCompletionSource<bool> m_modelWaiter = new TaskCompletionSource<bool>();
+        private object m_lock = new object();
 
         private NetworkManager m_networkManager = null;
 
@@ -38,7 +41,19 @@ namespace ProkenB.Game
         public float Now => Time.time - m_startTime;
 
         public MicrophoneSoundDetector Detector => detector;
-        public GameModel Model => m_model;
+        public GameModel Model
+        {
+            get => m_model;
+            set
+            {
+                lock (m_lock)
+                {
+                    m_model = value;
+                    m_modelWaiter?.SetResult(true);
+                    m_modelWaiter = null;
+                }
+            }
+        }
 
         /// <summary>
         /// すべてのゲームオブジェクトが初期化されたあとに呼ばれる奴．
@@ -61,19 +76,41 @@ namespace ProkenB.Game
             m_networkManager = gameObject.AddComponent<NetworkManager>();
 
             await m_networkManager.ConnectAsync();
-            SetupGame();
+
+            if (PhotonNetwork.IsMasterClient)
+            {
+                // Gameオブジェクトを作成
+                PhotonNetwork.Instantiate(
+                    "Game",
+                    new Vector3(0, 0, 0),
+                    Quaternion.identity);
+            }
         }
 
-        void SetupGame()
+        async void Start()
         {
-            // モデルの初期化
-            m_model = new GameModel();
+            await WaitForModel();
+
+            // Photonが同期するのを待つ
+            await Task.Delay(2000);
+
+            var players = Model.TotalPlayers;
+            Debug.Log($"game initialized with {players} player(s)");
+
+            if (players > Constant.MAX_PLAYERS)
+            {
+                // プレイヤー数上限の場合は，シーンの生成を行わない．
+                Debug.LogError("too many players in the same room: we do not handle that");
+            }
 
             // ステージの初期化
             m_stage = Instantiate(stagePrefab);
+
+            // プレイヤーの配置
             m_mainPlayer = PhotonNetwork.Instantiate(
                 "Player",
-                new Vector3(10.10229f, 2.368004f, 21.034f),
+                new Vector3(10.10229f, 2.368004f, 21.034f)
+                        + new Vector3(20.0f, 0, 0) * players,
                 Quaternion.identity);
 
             if (m_mainPlayer == null)
@@ -82,6 +119,19 @@ namespace ProkenB.Game
             }
 
             // UIをUIFactoryにつくらせる
+        }
+
+        public async Task WaitForModel()
+        {
+            lock (m_lock)
+            {
+                if (m_model != null)
+                {
+                    return;
+                }
+            }
+
+            await m_modelWaiter.Task;
         }
 
         /// <summary>
@@ -96,7 +146,6 @@ namespace ProkenB.Game
             Destroy(m_stage);
             m_stage = null;
 
-            // TODO: モデルを破棄
             m_model = null;
 
             // ここでちゃんとGameManagerを破棄する
