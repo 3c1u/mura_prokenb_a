@@ -10,12 +10,12 @@ namespace ProkenB.Presenter
 {
     public class GamePresenter : MonoBehaviour
     {
-        private GameView m_view = null;
+        private GameManager m_view = null;
         private GameModel m_model = null;
 
         private void Awake()
         {
-            m_view = gameObject.GetOrAddComponent<GameView>();
+            m_view = GameManager.Instance;
             m_model = new GameModel();
 
             GameManager.Instance.Model = m_model;
@@ -43,7 +43,8 @@ namespace ProkenB.Presenter
             var view = m_view;
             var model = m_model;
 
-            view.TotalPlayers = model.TotalPlayers;
+            model.TotalPlayers = view.TotalPlayers;
+            model.IsMaster = view.IsMaster;
 
             view.LifecycleChanged
                 .Do(l => model.Lifecycle = l)
@@ -59,6 +60,10 @@ namespace ProkenB.Presenter
 
             model.TotalPlayersAsObservable
                 .Do(value => view.TotalPlayers = value)
+                .Subscribe();
+
+            view.IsMasterAsObservable
+                .Do(value => model.IsMaster = value)
                 .Subscribe();
         }
     }

@@ -1,10 +1,13 @@
 using System;
 using System.Threading.Tasks;
+using ExitGames.Client.Photon;
 using Photon.Pun;
+using Photon.Realtime;
 using ProkenB.Detector;
 using UnityEngine;
-using ProkenB.Networking;
 using ProkenB.Model;
+using ProkenB.Presenter;
+using UniRx;
 
 namespace ProkenB.Game
 {
@@ -13,13 +16,11 @@ namespace ProkenB.Game
     /// コイツが一番偉い．
     ///
     /// つまり，ライフサイクル上ではこれがもっとも上位で，ほかのモデル，ビュー，プレゼンターは
-    /// コイツと一生をともにする（NetworkManagerも！）．DestroyOnLoadとかではないので
-    /// ，基本的にはシーンとともに一生を終える．儚い命よ...．
+    /// コイツと一生をともにする．DestroyOnLoadとかではないので，基本的にはシーンとともに一生を終える．儚い命よ...．
     /// </summary>
-    public class GameManager : MonoBehaviour
+    public class GameManager : MonoBehaviourPunCallbacks
     {
         /* GameMangerのPrefabにくっつけとくやつら．*/
-        [SerializeField] private GameObject playerPrefab = null;
         [SerializeField] private GameObject stagePrefab = null;
         [SerializeField] private MicrophoneSoundDetector detector = null;
 
@@ -32,11 +33,11 @@ namespace ProkenB.Game
         private TaskCompletionSource<bool> m_modelWaiter = new TaskCompletionSource<bool>();
         private object m_lock = new object();
 
-        private NetworkManager m_networkManager = null;
-
         private static GameManager m_manager = null;
         
         public static GameManager Instance => m_manager ?? throw new NullReferenceException("GameManager not started");
+
+        private GamePresenter m_presenter = null;
 
         private float m_startTime = 0;
         public float Now => Time.time - m_startTime;
@@ -56,12 +57,58 @@ namespace ProkenB.Game
             }
         }
 
+        /* */
+        private ReactiveProperty<bool> m_isMaster = new ReactiveProperty<bool>();
+        public bool IsMaster
+        {
+            get => m_isMaster.Value;
+            private set => m_isMaster.Value = value;
+        }
+
+        public IObservable<bool> IsMasterAsObservable => m_isMaster.AsObservable();
+
+        private bool m_roomJoined = false;
+
+        private Subject<Player> m_ownershipChanged = new Subject<Player>();
+        public IObservable<Player> OwnershipChanged => m_ownershipChanged.AsObservable();
+
+        private Subject<GameModel.GameLifecycle> m_lifecycle = new Subject<GameModel.GameLifecycle>();
+        public GameModel.GameLifecycle Lifecycle
+        {
+            get => m_customProperties["Lifecycle"] is int value ? (GameModel.GameLifecycle)value : GameModel.GameLifecycle.NotInitialized;
+            set
+            {
+                m_customProperties["Lifecycle"] = (int)value;
+                m_lifecycle.OnNext(value);
+                UpdateParameters();
+            }
+        }
+        public IObservable<GameModel.GameLifecycle> LifecycleChanged => m_lifecycle.AsObservable();
+
+        private Subject<int> m_totalPlayers = new Subject<int>();
+        public IObservable<int> TotalPlayersChanged => m_totalPlayers.AsObservable();
+
+        public int TotalPlayers
+        {
+            get => m_customProperties["TotalPlayers"] is int value ? value : 0;
+            set
+            {
+                m_customProperties["TotalPlayers"] = value;
+                m_totalPlayers.OnNext(value);
+                UpdateParameters();
+            }
+        }
+
+        private float m_timer = 0f;
+        private Hashtable m_customProperties = new Hashtable();
+        /* */
+
         /// <summary>
         /// すべてのゲームオブジェクトが初期化されたあとに呼ばれる奴．
         ///
         /// ここで，ゲームシーン上にいろんなオブジェクトを配置して，ゲームモデルを構築する．
         /// </summary>
-        async void Awake()
+        void Awake()
         {
             if (m_manager)
             {
@@ -70,32 +117,48 @@ namespace ProkenB.Game
 
             m_manager = this;
 
+            m_presenter = gameObject.AddComponent<GamePresenter>();
+
             // タイマーの初期化（本当はGameModelのステート変更によって初期化されるべき）
             m_startTime = Time.time;
 
-            // ネットワークマネージャーの初期化
-            m_networkManager = gameObject.AddComponent<NetworkManager>();
-
-            await m_networkManager.ConnectAsync();
-
-            if (PhotonNetwork.IsMasterClient)
-            {
-                // Gameオブジェクトを作成
-                PhotonNetwork.Instantiate(
-                    "Game",
-                    new Vector3(0, 0, 0),
-                    Quaternion.identity);
-            }
+            // Photonの初期化
+            PhotonNetwork.ConnectUsingSettings();
         }
 
-        async void Start()
+        public override void OnConnectedToMaster()
         {
-            await WaitForModel();
+            PhotonNetwork.JoinOrCreateRoom("room", new RoomOptions(), TypedLobby.Default);
 
-            // Photonが同期するのを待つ
-            await Task.Delay(2000);
+            m_customProperties["TotalPlayers"] = 0;
+            m_customProperties["Lifecycle"] = (int)GameModel.GameLifecycle.NotInitialized;
+        }
 
-            var players = Model.TotalPlayers;
+        public override void OnJoinedRoom()
+        {
+            IsMaster = PhotonNetwork.IsMasterClient;
+
+            // プロパティの同期
+            if (!IsMaster)
+            {
+                m_customProperties = PhotonNetwork.CurrentRoom.CustomProperties;
+
+                Lifecycle = Lifecycle;
+                TotalPlayers = TotalPlayers;
+
+                if (Lifecycle == GameModel.GameLifecycle.Playing || Lifecycle == GameModel.GameLifecycle.Finish)
+                {
+                    Debug.LogError("an attempt to join the ongoing game should not occur");
+                }
+            }
+            else
+            {
+                UpdateParameters();
+            }
+
+            m_roomJoined = true;
+
+            var players = TotalPlayers;
             Debug.Log($"game initialized with {players} player(s)");
 
             if (players > Constant.MAX_PLAYERS)
@@ -111,7 +174,7 @@ namespace ProkenB.Game
             m_mainPlayer = PhotonNetwork.Instantiate(
                 "Player",
                 new Vector3(10.10229f, 2.368004f, 21.034f)
-                        + new Vector3(20.0f, 0, 0) * players,
+                + new Vector3(20.0f, 0, 0) * players,
                 Quaternion.identity);
 
             if (m_mainPlayer == null)
@@ -122,17 +185,104 @@ namespace ProkenB.Game
             // UIをUIFactoryにつくらせる
         }
 
-        public async Task WaitForModel()
+        private void UpdateParameters()
         {
-            lock (m_lock)
+            if (IsMaster && m_roomJoined)
             {
-                if (m_model != null)
-                {
-                    return;
-                }
+                PhotonNetwork.CurrentRoom.SetCustomProperties(m_customProperties);
+            }
+        }
+
+        public override void OnMasterClientSwitched(Player newMasterClient)
+        {
+            m_ownershipChanged.OnNext(newMasterClient);
+
+            if (!newMasterClient.IsLocal)
+            {
+                IsMaster = false;
+                return;
             }
 
-            await m_modelWaiter.Task;
+            IsMaster = true;
+
+            Debug.Log("ownership moved to local");
+
+            // マスターとしての処理を引き継ぐ
+        }
+
+        private void Update()
+        {
+            if (!m_roomJoined)
+            {
+                return;
+            }
+
+            m_timer += Time.deltaTime;
+
+            if (!IsMaster)
+            {
+                return;
+            }
+
+            switch (Lifecycle)
+            {
+                case GameModel.GameLifecycle.NotInitialized:
+                    if (TotalPlayers >= Constant.MIN_PLAYERS)
+                    {
+                        Lifecycle = GameModel.GameLifecycle.Ready;
+                        m_timer = 0;
+                    }
+                    break;
+                case GameModel.GameLifecycle.Ready:
+                    if (m_timer >= Constant.WAITTIME_GAME_START)
+                    {
+                        Lifecycle = GameModel.GameLifecycle.Playing;
+                        m_timer = 0;
+                    }
+
+                    if (TotalPlayers == 1)
+                    {
+                        // 待機状態にロールバック
+                        Lifecycle = GameModel.GameLifecycle.NotInitialized;
+                        m_timer = 0;
+                    }
+                    break;
+                case GameModel.GameLifecycle.Playing:
+                    if (TotalPlayers == 1 || false) // TODO: ゴール判定
+                    {
+                        Lifecycle = GameModel.GameLifecycle.Finish;
+                        m_timer = 0;
+                    }
+                    break;
+                case GameModel.GameLifecycle.Finish:
+                    if (false) // 全員のゴール判定
+                    {
+                        // TODO: シーン遷移とか
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public override void OnRoomPropertiesUpdate(Hashtable changedProps)
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                return;
+            }
+
+            if (changedProps["TotalPlayers"] is int totalPlayers)
+            {
+                m_totalPlayers.OnNext(totalPlayers);
+                m_customProperties["TotalPlayers"] = totalPlayers;
+            }
+
+            if (changedProps["Lifecycle"] is int lifecycle)
+            {
+                m_lifecycle.OnNext((GameModel.GameLifecycle)lifecycle);
+                m_customProperties["Lifecycle"] = lifecycle;
+            }
         }
 
         /// <summary>
@@ -151,11 +301,8 @@ namespace ProkenB.Game
 
             // ここでちゃんとGameManagerを破棄する
             m_manager = null;
-        }
 
-        void Update()
-        {
-            //
+            m_roomJoined = false;
         }
     }
 }
