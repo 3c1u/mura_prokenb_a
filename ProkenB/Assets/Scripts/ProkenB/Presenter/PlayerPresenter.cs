@@ -16,11 +16,8 @@ namespace ProkenB.Presenter
 
         private PlayerView View => m_view;
 
-        private async void Awake()
+        private void Awake()
         {
-            // カスPhotonめ...
-            await GameManager.Instance.WaitForModel();
-
             // ここでモデルへの追加と初期化を行う
             var model = new PlayerModel();
 
