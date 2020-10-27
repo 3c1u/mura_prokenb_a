@@ -17,6 +17,6 @@ public class describe : MonoBehaviour
     {
         MicrophoneSoundDetector x = new MicrophoneSoundDetector();
         count++;
-        lr.SetPosition(count - 1, new Vector3(count, x.fftResultBuffer[count], 0));
+        lr.SetPosition(count - 1, new Vector3(count, x.FftResultBuffer[count], 0));
     }
 }

@@ -17,7 +17,7 @@ namespace ProkenB.Detector
 
         private VoiceInputState _currentState = VoiceInputState.Off;
         private float[] _fftResultBuffer = new float[FFT_SIZE];
-        public float[] fftResultBuffer
+        public float[] FftResultBuffer
         {
             get{return _fftResultBuffer;}
         }
