@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UniRx;
+using UnityEngine;
 
 namespace ProkenB.Model
 {
@@ -8,6 +9,38 @@ namespace ProkenB.Model
     {
         private List<PlayerModel> m_players = new List<PlayerModel>();
         public List<PlayerModel> Players => m_players;
+
+        private ReactiveProperty<int> m_totalPlayers = new ReactiveProperty<int>(0);
+        public IObservable<int> TotalPlayersAsObservable => m_totalPlayers.AsObservable();
+
+        public int TotalPlayers
+        {
+            get => m_totalPlayers.Value;
+            set => m_totalPlayers.Value = value;
+        }
+
+        public void AddPlayer(PlayerModel player)
+        {
+            Debug.Log("player entered");
+            m_players.Add(player);
+            TotalPlayers++;
+        }
+
+        public void RemovePlayer(PlayerModel player)
+        {
+            Debug.Log("player leaved");
+            m_players.Remove(player);
+            TotalPlayers--;
+        }
+
+        private ReactiveProperty<bool> m_isMaster = new ReactiveProperty<bool>(false);
+        public IObservable<bool> IsMasterAsObservable => m_isMaster.AsObservable();
+
+        public bool IsMaster
+        {
+            get => m_isMaster.Value;
+            set => m_isMaster.Value = value;
+        }
 
         public enum GameLifecycle
         {

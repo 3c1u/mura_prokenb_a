@@ -46,7 +46,10 @@ namespace ProkenB.View
             }
 
             var cameraTr = Camera.main.transform;
-            cameraTr.position = transform.position + m_cameraOffset;
+            var position = transform.position;
+
+            cameraTr.position = position + m_cameraOffset;
+            m_positionChanged.OnNext(position);
         }
 
         private void FixedUpdate()
@@ -64,6 +67,9 @@ namespace ProkenB.View
             {
                 m_rigidBody.AddForce(new Vector3(0, 0, 60));
             }
+
+            m_rigidBody.AddForce(new Vector3(0, 0, 200) * Input.GetAxis("Vertical"));
+            m_rigidBody.AddForce(new Vector3(200, 0, 0) * Input.GetAxis("Horizontal"));
         }
 
         // Colliderから呼び出されてほしい
