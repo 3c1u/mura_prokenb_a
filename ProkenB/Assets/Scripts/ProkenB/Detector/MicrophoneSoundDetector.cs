@@ -19,7 +19,7 @@ namespace ProkenB.Detector
         private float[] _fftResultBuffer = new float[FFT_SIZE];
         public float[] FftResultBuffer
         {
-            get{return _fftResultBuffer;}
+            get { return _fftResultBuffer; }
         }
         public bool Voice => _currentState == VoiceInputState.Tonal;
 

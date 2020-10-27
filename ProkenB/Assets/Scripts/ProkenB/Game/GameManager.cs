@@ -34,7 +34,7 @@ namespace ProkenB.Game
         private object m_lock = new object();
 
         private static GameManager m_manager = null;
-        
+
         public static GameManager Instance => m_manager ?? throw new NullReferenceException("GameManager not started");
 
         private GamePresenter m_presenter = null;
