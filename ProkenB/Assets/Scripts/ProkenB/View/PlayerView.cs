@@ -33,11 +33,6 @@ namespace ProkenB.View
             m_rigidBody = GetComponent<Rigidbody>();
         }
 
-        void Start()
-        {
-
-        }
-
         void Update()
         {
             if (m_photonView && !m_photonView.IsMine)

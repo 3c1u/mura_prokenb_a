@@ -17,11 +17,9 @@ namespace ProkenB.Presenter
         [SerializeField]
         private GameStateView gameStateView = null;
 
-        private async void Start()
+        private void Start()
         {
-            await GameManager.Instance.WaitForModel();
             m_model = GameManager.Instance.Model;
-
             Bind();
         }
 
