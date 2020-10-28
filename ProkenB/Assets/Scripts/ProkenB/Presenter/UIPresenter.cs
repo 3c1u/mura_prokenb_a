@@ -34,16 +34,19 @@ namespace ProkenB.Presenter
             gameStateView.IsMaster = m_model.IsMaster;
 
             m_model.LifecycleAsObservable
-                .Do(value => gameStateView.Lifecycle = value)
-                .Subscribe();
+                .Subscribe(value => gameStateView.Lifecycle = value);
 
             m_model.TotalPlayersAsObservable
-                .Do(value => gameStateView.TotalPlayers = value)
-                .Subscribe();
+                .Subscribe(value => gameStateView.TotalPlayers = value);
 
             m_model.IsMasterAsObservable
-                .Do(value => gameStateView.IsMaster = value)
-                .Subscribe();
+                .Subscribe(value => gameStateView.IsMaster = value);
+
+            m_model.LocalPlayerAsObservable
+                .Subscribe(player =>
+                    player?.GoalTimeAsObservable
+                        .Subscribe(v => gameStateView.HasReachedGoal = v != null)
+                );
         }
     }
 }
