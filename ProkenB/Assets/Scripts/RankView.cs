@@ -32,6 +32,7 @@ public class RankView : MonoBehaviour
         var list = new List<float>();
         list.AddRange(list);
         list.Sort();
+        list.Reverse();
         float i = relativepass1;
         int rank = list.IndexOf(relativepass1) + 1;
         rankText.text = rank + "位";
