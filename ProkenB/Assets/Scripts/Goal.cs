@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using ProkenB.Game;
+using ProkenB.View;
 using UnityEngine;
 
 public class Goal : MonoBehaviour
@@ -11,9 +13,12 @@ public class Goal : MonoBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player")
+        var otherObject = other.gameObject;
+
+        if (otherObject.CompareTag("Player"))
         {
-            goal = true;
+            var playerView = otherObject.GetComponent<PlayerView>();
+            playerView.NotifyGoalReached();
         }
     }
 }

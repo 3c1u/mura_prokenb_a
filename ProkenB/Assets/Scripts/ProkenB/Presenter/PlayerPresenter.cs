@@ -21,10 +21,10 @@ namespace ProkenB.Presenter
             // ここでモデルへの追加と初期化を行う
             var model = new PlayerModel();
 
-            GameManager.Instance.Model.AddPlayer(model);
-
             m_view = gameObject.GetOrAddComponent<PlayerView>();
             m_model = model;
+
+            GameManager.Instance.Model.AddPlayer(model, m_view.IsLocal);
 
             Bind();
         }
@@ -50,18 +50,18 @@ namespace ProkenB.Presenter
 
             // 位置の同期
             View.PositionChanged
-                .Do(v => m_model.Position = v)
-                .Subscribe();
+                .Subscribe(v => m_model.Position = v);
 
             m_model.PositionAsObservable
-                .Do(v => View.Position = v)
-                .Subscribe();
+                .Subscribe(v => View.Position = v);
+
+            View.GoalReached
+                .Subscribe(v => m_model.GoalTime = v);
 
             // 削除
             var model = m_model;
             View.OnDestroyAsObservable()
-                .Do(_ => model.Destroy())
-                .Subscribe();
+                .Subscribe(_ => model.Destroy());
         }
     }
 }

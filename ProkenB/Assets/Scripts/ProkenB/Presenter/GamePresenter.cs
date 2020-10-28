@@ -47,24 +47,19 @@ namespace ProkenB.Presenter
             model.IsMaster = view.IsMaster;
 
             view.LifecycleChanged
-                .Do(l => model.Lifecycle = l)
-                .Subscribe();
+                .Subscribe(l => model.Lifecycle = l);
 
             view.OwnershipChanged
-                .Do(value => model.IsMaster = value.IsMasterClient)
-                .Subscribe();
+                .Subscribe(value => model.IsMaster = value.IsMasterClient);
 
             m_view.TotalPlayersChanged
-                .Do(value => model.TotalPlayers = value)
-                .Subscribe();
+                .Subscribe(value => model.TotalPlayers = value);
 
             model.TotalPlayersAsObservable
-                .Do(value => view.TotalPlayers = value)
-                .Subscribe();
+                .Subscribe(value => view.TotalPlayers = value);
 
             view.IsMasterAsObservable
-                .Do(value => model.IsMaster = value)
-                .Subscribe();
+                .Subscribe(value => model.IsMaster = value);
         }
     }
 }

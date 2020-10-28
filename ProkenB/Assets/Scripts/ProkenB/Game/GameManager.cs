@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using ExitGames.Client.Photon;
 using Photon.Pun;
@@ -38,9 +39,6 @@ namespace ProkenB.Game
         public static GameManager Instance => m_manager ?? throw new NullReferenceException("GameManager not started");
 
         private GamePresenter m_presenter = null;
-
-        private float m_startTime = 0;
-        public float Now => Time.time - m_startTime;
 
         public MicrophoneSoundDetector Detector => detector;
         public GameModel Model
@@ -100,6 +98,7 @@ namespace ProkenB.Game
         }
 
         private float m_timer = 0f;
+        public float Timer => m_timer;
         private Hashtable m_customProperties = new Hashtable();
         /* */
 
@@ -119,8 +118,11 @@ namespace ProkenB.Game
 
             m_presenter = gameObject.AddComponent<GamePresenter>();
 
-            // タイマーの初期化（本当はGameModelのステート変更によって初期化されるべき）
-            m_startTime = Time.time;
+            // タイマーの初期化
+            m_timer = 0;
+            m_lifecycle.AsObservable()
+                .Subscribe(_ => m_timer = 0)
+                ;
 
             // Photonの初期化
             PhotonNetwork.ConnectUsingSettings();
@@ -230,35 +232,34 @@ namespace ProkenB.Game
                     if (TotalPlayers >= Constant.MIN_PLAYERS)
                     {
                         Lifecycle = GameModel.GameLifecycle.Ready;
-                        m_timer = 0;
                     }
                     break;
                 case GameModel.GameLifecycle.Ready:
                     if (m_timer >= Constant.WAITTIME_GAME_START)
                     {
                         Lifecycle = GameModel.GameLifecycle.Playing;
-                        m_timer = 0;
                     }
 
                     if (TotalPlayers == 1)
                     {
                         // 待機状態にロールバック
                         Lifecycle = GameModel.GameLifecycle.NotInitialized;
-                        m_timer = 0;
                     }
                     break;
                 case GameModel.GameLifecycle.Playing:
-                    if (TotalPlayers == 1 || false) // TODO: ゴール判定
+                    if (TotalPlayers == 1)
                     {
+                        Debug.Log("orphaned player");
                         Lifecycle = GameModel.GameLifecycle.Finish;
-                        m_timer = 0;
+                    }
+                    else if (Model.Players.All(p => p.HasReachedGoal))
+                    {
+                        Debug.Log("all reached goal");
+                        Lifecycle = GameModel.GameLifecycle.Finish;
                     }
                     break;
                 case GameModel.GameLifecycle.Finish:
-                    if (false) // 全員のゴール判定
-                    {
-                        // TODO: シーン遷移とか
-                    }
+                    // TODO: シーン遷移とか
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

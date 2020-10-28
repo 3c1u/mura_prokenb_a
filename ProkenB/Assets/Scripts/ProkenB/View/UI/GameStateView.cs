@@ -1,4 +1,5 @@
 using System;
+using ProkenB.Game;
 using ProkenB.Model;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
@@ -14,6 +15,17 @@ namespace ProkenB.View.UI
         private GameModel.GameLifecycle m_lifecycle;
         private bool m_isMaster = false;
         private int m_totalPlayers = 0;
+        private bool m_hasReachedGoal = false;
+
+        public bool HasReachedGoal
+        {
+            get => m_hasReachedGoal;
+            set
+            {
+                m_hasReachedGoal = value;
+                UpdateLabel();
+            }
+        }
 
         public bool IsMaster
         {
@@ -55,6 +67,11 @@ namespace ProkenB.View.UI
             m_text = null;
         }
 
+        private void FixedUpdate()
+        {
+            UpdateLabel();
+        }
+
         void UpdateLabel()
         {
             if (!m_text)
@@ -63,6 +80,7 @@ namespace ProkenB.View.UI
             }
 
             string state;
+            var timer = GameManager.Instance.Timer;
 
             switch (m_lifecycle)
             {
@@ -70,10 +88,10 @@ namespace ProkenB.View.UI
                     state = "not ready";
                     break;
                 case GameModel.GameLifecycle.Ready:
-                    state = "ready";
+                    state = $"ready <start in {Mathf.FloorToInt(Constant.WAITTIME_GAME_START - timer)} seconds>";
                     break;
                 case GameModel.GameLifecycle.Playing:
-                    state = "playing";
+                    state = $"playing for {Mathf.FloorToInt(timer)} second(s)";
                     break;
                 case GameModel.GameLifecycle.Finish:
                     state = "finish";
@@ -82,7 +100,9 @@ namespace ProkenB.View.UI
                     throw new ArgumentOutOfRangeException();
             }
 
-            m_text.text = $"{m_totalPlayers} player{(m_totalPlayers < 2 ? "" : "s")}\n{state}{(m_isMaster ? " (master)" : "")}";
+            m_text.text = $"{m_totalPlayers} player{(m_totalPlayers < 2 ? "" : "s")}" +
+                          (m_hasReachedGoal ? ", reached" : ", not reached") +
+                          $"\n{state}{(m_isMaster ? " (master)" : "")}";
         }
     }
 }
