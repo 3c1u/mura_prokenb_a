@@ -42,8 +42,18 @@ namespace ProkenB.Model
 
         public void RemovePlayer(PlayerModel player)
         {
-            Debug.Log("player leaved");
-            m_players.Remove(player);
+            Debug.Log("player left");
+
+            // ランキングの処理に関わるので...（とりあえず）
+            if (m_lifecycle.Value != GameLifecycle.Playing)
+            {
+                m_players.Remove(player);
+            }
+            else
+            {
+                player.IsActive = false;
+            }
+
             TotalPlayers--;
             if (LocalPlayer == player)
             {

@@ -17,6 +17,8 @@ namespace ProkenB.View
         private Subject<float> m_goalReached = new Subject<float>();
         public IObservable<float> GoalReached => m_goalReached.AsObservable();
 
+        private bool m_hasReachedGoal = false;
+
         private PhotonView m_photonView = null;
         private Rigidbody m_rigidBody = null;
 
@@ -38,16 +40,14 @@ namespace ProkenB.View
 
         void Update()
         {
-            if (m_photonView && !m_photonView.IsMine)
-            {
-                return;
-            }
-
-            var cameraTr = Camera.main.transform;
             var position = transform.position;
-
-            cameraTr.position = position + m_cameraOffset;
             m_positionChanged.OnNext(position);
+
+            if (m_photonView && m_photonView.IsMine)
+            {
+                var cameraTr = Camera.main.transform;
+                cameraTr.position = position + m_cameraOffset;
+            }
         }
 
         private void FixedUpdate()
@@ -57,7 +57,7 @@ namespace ProkenB.View
                 return;
             }
 
-            if (GameManager.Instance.Model.Lifecycle != GameModel.GameLifecycle.Playing)
+            if (GameManager.Instance.Model.Lifecycle != GameModel.GameLifecycle.Playing || m_hasReachedGoal)
             {
                 m_rigidBody.velocity = Vector3.zero;
                 return;
@@ -84,6 +84,7 @@ namespace ProkenB.View
                 return;
             }
 
+            m_hasReachedGoal = true;
             m_photonView.RPC("GoalReachedMessage", RpcTarget.AllViaServer, GameManager.Instance.Timer);
         }
 

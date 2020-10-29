@@ -27,11 +27,11 @@ public class RankView : MonoBehaviour
 
         var topPlayers =
         players.OrderBy(p => p.GoalTime ?? float.PositiveInfinity)
-            .ThenBy(p => (p.Position - m_goalPosition).magnitude)
+            .ThenBy(p => (p.Position - m_goalPosition).sqrMagnitude)
             .ToList();
 
         rank = 1 + topPlayers.IndexOf(localPlayer);
 
-        rankText.text = $"{rank} 位";
+        rankText.text = rank == 0 ? "" : $"{rank} 位";
     }
 }

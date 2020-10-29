@@ -36,7 +36,7 @@ namespace ProkenB.Game
 
         private static GameManager m_manager = null;
 
-        public static GameManager Instance => m_manager ?? throw new NullReferenceException("GameManager not started");
+        public static GameManager Instance => m_manager;
 
         private GamePresenter m_presenter = null;
 
@@ -191,7 +191,7 @@ namespace ProkenB.Game
         {
             if (IsMaster && m_roomJoined)
             {
-                PhotonNetwork.CurrentRoom.SetCustomProperties(m_customProperties);
+                PhotonNetwork.CurrentRoom?.SetCustomProperties(m_customProperties);
             }
         }
 
@@ -299,6 +299,8 @@ namespace ProkenB.Game
             m_stage = null;
 
             m_model = null;
+
+            PhotonNetwork.Disconnect();
 
             // ここでちゃんとGameManagerを破棄する
             m_manager = null;
