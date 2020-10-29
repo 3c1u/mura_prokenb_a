@@ -1,39 +1,37 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using ProkenB.Game;
+using ProkenB.Model;
 
 public class RankView : MonoBehaviour
 {
-    // Start is called before the first frame update
     public Text rankText;
-    Vector3 tmp1, tmp2, tmp3;
-    Vector3 goalPosition;
-    public float relativepass1, relativepass2, relativepass3;
+    Vector3 m_goalPosition = new Vector3(0.0f, 0.0f, 450.0f);
+
+    public int rank = 0;
+
     void Start()
     {
-        goalPosition = GameObject.Find("GoalLine").transform.position;
-        tmp1 = GameObject.Find("Player").transform.position;
-        tmp2 = GameObject.Find("Player2").transform.position;
-        tmp3 = GameObject.Find("Player3").transform.position;
         rankText.text = "";
     }
 
     // Update is called once per frame
     void Update()
     {
-        tmp1 = GameObject.Find("Player").transform.position;
-        tmp2 = GameObject.Find("Player2").transform.position;
-        tmp3 = GameObject.Find("Player3").transform.position;
-        relativepass1 = goalPosition.z - tmp1.z;
-        relativepass2 = goalPosition.z - tmp2.z;
-        relativepass3 = goalPosition.z - tmp3.z;
-        float[] List = { relativepass1, relativepass2, relativepass3 };
-        var list = new List<float>();
-        list.AddRange(list);
-        list.Sort();
-        float i = relativepass1;
-        int rank = list.IndexOf(relativepass1) + 1;
-        rankText.text = rank + "位";
+        var players = GameManager.Instance.Model.Players;
+        var localPlayer = GameManager.Instance.Model.LocalPlayer;
+
+        var topPlayers =
+        players.OrderBy(p => p.GoalTime ?? float.PositiveInfinity)
+            .ThenBy(p => (p.Position - m_goalPosition).sqrMagnitude)
+            .ToList();
+
+        rank = 1 + topPlayers.IndexOf(localPlayer);
+
+        rankText.text = rank == 0 ? "" : $"{rank} 位";
     }
 }

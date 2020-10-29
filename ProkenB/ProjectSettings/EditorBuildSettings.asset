@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/nayuta_ai/Title.unity
+    guid: abbcd1e03a3819e4e96ab6962402090d
+  - enabled: 1
     path: Assets/Scenes/Game Scene.unity
     guid: fbf68444b4ec4497d870885f3a83adf6
+  - enabled: 0
+    path: Assets/Scenes/nayuta_ai/WorkScene.unity
+    guid: db092481482aa6c4b9df3edb2be85e4d
   m_configObjects: {}

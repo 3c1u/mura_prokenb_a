@@ -42,6 +42,16 @@ namespace ProkenB.Model
         /// </summary>
         public bool HasReachedGoal => m_goalTime.Value != null;
 
+        private ReactiveProperty<bool> m_isActive = new ReactiveProperty<bool>(true);
+
+        public bool IsActive
+        {
+            get => m_isActive.Value;
+            set => m_isActive.Value = value;
+        }
+
+        public IObservable<bool> IsActiveAsObservable => m_isActive.AsObservable();
+
         public void Destroy()
         {
             GameModel parent = null;

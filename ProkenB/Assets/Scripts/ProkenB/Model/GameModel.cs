@@ -9,7 +9,6 @@ namespace ProkenB.Model
     {
         private List<PlayerModel> m_players = new List<PlayerModel>();
         public List<PlayerModel> Players => m_players;
-
         private ReactiveProperty<PlayerModel> m_localPlayer = new ReactiveProperty<PlayerModel>(null);
 
         public PlayerModel LocalPlayer
@@ -43,8 +42,18 @@ namespace ProkenB.Model
 
         public void RemovePlayer(PlayerModel player)
         {
-            Debug.Log("player leaved");
-            m_players.Remove(player);
+            Debug.Log("player left");
+
+            // ランキングの処理に関わるので...（とりあえず）
+            if (m_lifecycle.Value != GameLifecycle.Playing)
+            {
+                m_players.Remove(player);
+            }
+            else
+            {
+                player.IsActive = false;
+            }
+
             TotalPlayers--;
             if (LocalPlayer == player)
             {

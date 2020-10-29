@@ -2,22 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+//using ProkenB.Game;
 
 public class Title : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private const string SceneName = "Game Scene";
+    public void OnclickStartButton()
     {
-        Invoke("ChangeScene", 1.5f);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-    void ChangeScene()
-    {
-        SceneManager.LoadScene("WorkScene");
+        SceneManager.LoadScene(SceneName);
     }
 }

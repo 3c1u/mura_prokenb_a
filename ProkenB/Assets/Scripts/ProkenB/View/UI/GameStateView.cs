@@ -74,7 +74,7 @@ namespace ProkenB.View.UI
 
         void UpdateLabel()
         {
-            if (!m_text)
+            if (!m_text || !GameManager.Instance)
             {
                 return;
             }
