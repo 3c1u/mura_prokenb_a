@@ -10,6 +10,8 @@ public class GameFinish : MonoBehaviour
 {
     public Text finishTime;
     public GameObject finishUI;
+    public Text rankText;
+    public RankView rankview;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,7 +27,9 @@ public class GameFinish : MonoBehaviour
             finishUI.SetActive(true);
             var time = GameManager.Instance.Timer;
             finishTime.text = "Finish Time = " + time;
-
+            int rank;
+            rank = rankview.rank;
+            rankText.text = "Rnking = " + rank;
         }
     }
     public void OnRetry()

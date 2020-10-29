@@ -9,7 +9,6 @@ namespace ProkenB.Model
     {
         private List<PlayerModel> m_players = new List<PlayerModel>();
         public List<PlayerModel> Players => m_players;
-
         private ReactiveProperty<PlayerModel> m_localPlayer = new ReactiveProperty<PlayerModel>(null);
 
         public PlayerModel LocalPlayer
