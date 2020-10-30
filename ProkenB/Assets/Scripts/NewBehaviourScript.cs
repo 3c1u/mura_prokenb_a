@@ -37,7 +37,7 @@ public class NewBehaviourScript : MonoBehaviour
             var nyquistFreq = 22050.0f;
             var freq = Mathf.Pow(2, (x / (float)width) * Mathf.Log(nyquistFreq, 2));
             var fftNormalized = fft[(int)(freq * fft.Length / nyquistFreq)];
-            var fftDecibel = 120.0f + 10.0f * Mathf.Log(fftNormalized, 2);
+            var fftDecibel = 120.0f + 20.0f * Mathf.Log(fftNormalized, 10);
             var threshold = fftDecibel / 120.0f * height;
 
             for (var y = 0; y < height; y++)

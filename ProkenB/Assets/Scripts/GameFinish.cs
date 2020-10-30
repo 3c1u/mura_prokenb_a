@@ -21,7 +21,7 @@ public class GameFinish : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        finishTime.text = "";
+
     }
 
     // Update is called once per frame
@@ -66,7 +66,8 @@ public class GameFinish : MonoBehaviour
         }
 
         finishUI.SetActive(true);
-        finishTime.text = $"Finish Time = {GameManager.Instance.Timer}";
+        var time = GameManager.Instance.Timer;
+        finishTime.text = $"Finish Time = {Mathf.FloorToInt(time)}";
 
         var rankview = FindObjectOfType<RankView>();
         rankText.text = $"Rnking = {rankview.rank}";
