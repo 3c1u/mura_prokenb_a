@@ -26,6 +26,7 @@ namespace ProkenB.Detector
         public bool Breath => _currentState == VoiceInputState.Blow;
 
         private float _volumeRate = 0f;
+        public float Power => _volumeRate;
 
         public enum VoiceInputState
         {
@@ -132,7 +133,7 @@ namespace ProkenB.Detector
             }
 
             // データ数で割ったものに倍率をかけて音量とする
-            _volumeRate = Mathf.Clamp01(Mathf.Sqrt(sum) * gain / (float)data.Length) * 25000;
+            _volumeRate = Mathf.Clamp01(Mathf.Sqrt(sum) * gain / (float)data.Length) * 1000;
         }
 
         /// <summary>

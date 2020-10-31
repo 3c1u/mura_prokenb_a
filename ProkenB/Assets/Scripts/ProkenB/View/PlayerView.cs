@@ -65,11 +65,18 @@ namespace ProkenB.View
 
             // 入力を取る
             var breath = GameManager.Instance.Detector.Breath;
-            var _voice = GameManager.Instance.Detector.Voice;
+            var voice = GameManager.Instance.Detector.Voice;
+            var power = GameManager.Instance.Detector.Power;
+            var timer = GameManager.Instance.Timer;
 
             if (breath)
             {
-                m_rigidBody.AddForce(new Vector3(0, 0, 60));
+                m_rigidBody.AddForce(new Vector3(0, 0, 70) * power);
+            }
+
+            if (voice)
+            {
+                m_rigidBody.AddForce(new Vector3(100.0f * power * Mathf.Sin(timer * 10.0f), 0, 0));
             }
 
             m_rigidBody.AddForce(new Vector3(0, 0, 200) * Input.GetAxis("Vertical"));
